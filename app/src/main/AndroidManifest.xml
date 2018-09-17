@@ -24,6 +24,10 @@
         <activity
             android:name=".ui.activity.StoriesActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.StoryDetailsActivity"
+            android:label="@string/title_activity_story_details"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

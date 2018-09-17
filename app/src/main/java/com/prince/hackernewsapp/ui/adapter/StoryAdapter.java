@@ -2,16 +2,20 @@ package com.prince.hackernewsapp.ui.adapter;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.prince.hackernewsapp.R;
 import com.prince.hackernewsapp.model.TopStory;
+import com.prince.hackernewsapp.ui.activity.StoryDetailsActivity;
+import com.prince.hackernewsapp.utils.TimeUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,10 +52,21 @@ public class StoryAdapter extends RealmRecyclerViewAdapter<TopStory, StoryAdapte
         holder.mTitle.setText(topStory.getTitle());
         holder.mUrl.setText(topStory.getUrl());
         holder.mTotalComments.setText(String.valueOf(topStory.getDescendants()));
+        long time = System.currentTimeMillis() / 1000 - topStory.getTime();
+
+        holder.mUserTime.setText(String.format("%s ago%s%s", TimeUtils.timeConverter(time), " . ", topStory.getBy()));
+
+        holder.mParent.setOnClickListener(view -> {
+            Intent intent = new Intent(context, StoryDetailsActivity.class);
+            intent.putExtra("storyId", topStory.getId());
+            context.startActivity(intent);
+        });
 
     }
 
     class StoryViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.layout_parent)
+        LinearLayout mParent;
         @BindView(R.id.tv_score)
         TextView mScore;
         @BindView(R.id.tv_title)

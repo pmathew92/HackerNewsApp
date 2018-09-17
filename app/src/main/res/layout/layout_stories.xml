@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_parent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
@@ -9,7 +11,7 @@
         android:id="@+id/tv_score"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.2"
+        android:layout_weight="0.25"
         android:background="#FFC9A5"
         android:gravity="center"
         android:maxLength="3"
@@ -23,6 +25,8 @@
         android:layout_weight="1"
         android:background="#EFEFEF"
         android:orientation="vertical"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
         android:padding="4dp">
 
         <TextView
@@ -30,11 +34,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:gravity="center"
             android:maxLines="2"
             android:minLines="2"
-            android:textColor="@android:color/tertiary_text_dark"
-            android:textSize="16sp" />
+            android:textStyle="bold"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tv_url"
@@ -42,7 +46,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:ellipsize="end"
-            android:gravity="center"
             android:maxLines="1"
             android:textSize="12sp"
             android:textStyle="italic" />
@@ -53,8 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="1"
+            android:maxLines="2"
             android:textSize="12sp" />
     </LinearLayout>
 
