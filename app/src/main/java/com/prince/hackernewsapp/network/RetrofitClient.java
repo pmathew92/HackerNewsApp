@@ -17,7 +17,7 @@ public class RetrofitClient {
      *
      * @return
      */
-    public static Retrofit getInstance() {
+    private static Retrofit getInstance() {
         if (instance == null) {
             instance = new Retrofit.Builder()
                     .baseUrl(BASE_URL)

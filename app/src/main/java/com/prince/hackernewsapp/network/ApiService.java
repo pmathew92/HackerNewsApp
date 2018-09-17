@@ -4,14 +4,14 @@ import com.prince.hackernewsapp.model.TopStory;
 
 import java.util.List;
 
-import io.reactivex.Single;
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 public interface ApiService {
     @GET("topstories.json?print=pretty")
-    Single<List<Integer>> getTopStories();
+    Observable<List<Integer>> getTopStories();
 
     @GET("item/{id}.json?print=pretty")
-    Single<TopStory> getStory(@Path("id") int id);
+    Observable<TopStory> getStory(@Path("id") int id);
 }

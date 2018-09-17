@@ -5,20 +5,25 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-public class TopStory {
+
+public class TopStory extends RealmObject {
     @SerializedName("by")
     @Expose
     private String by;
     @SerializedName("descendants")
     @Expose
     private int descendants;
+    @PrimaryKey
     @SerializedName("id")
     @Expose
     private int id;
     @SerializedName("kids")
     @Expose
-    private List<Integer> kids = null;
+    private RealmList<Integer> kids = null;
     @SerializedName("score")
     @Expose
     private int score;
@@ -63,7 +68,7 @@ public class TopStory {
         return kids;
     }
 
-    public void setKids(List<Integer> kids) {
+    public void setKids(RealmList<Integer> kids) {
         this.kids = kids;
     }
 
