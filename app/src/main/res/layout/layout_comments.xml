@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginTop="8dp"
+    android:background="#e6e6e6"
+    android:padding="@dimen/default_padding">
+
+    <TextView
+        android:id="@+id/tv_user_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:textColor="@color/colorBlack"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="Introduction to HTML components" />
+
+    <TextView
+        android:id="@+id/tv_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="#8c8c8c"
+        android:textSize="13sp"
+        tools:text="www.w3c.org" />
+</LinearLayout>

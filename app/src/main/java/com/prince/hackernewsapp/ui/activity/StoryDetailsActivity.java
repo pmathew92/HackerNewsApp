@@ -1,33 +1,33 @@
 package com.prince.hackernewsapp.ui.activity;
 
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.prince.hackernewsapp.R;
+import com.prince.hackernewsapp.model.TopStory;
+import com.prince.hackernewsapp.ui.fragment.ArticleFragment;
+import com.prince.hackernewsapp.ui.fragment.CommentsFragment;
+import com.prince.hackernewsapp.utils.TimeUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 public class StoryDetailsActivity extends AppCompatActivity {
 
 
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private boolean isUrlEmpty = false;
+    private TopStory mTopStory;
 
     @BindView(R.id.container)
     ViewPager mViewPager;
@@ -38,77 +38,111 @@ public class StoryDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_story_details);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Realm mRealm = Realm.getDefaultInstance();
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        toolbar.setNavigationOnClickListener(view -> {
+            finish();
+        });
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        int storyId = getIntent().getIntExtra("storyId", 0);
 
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        mTopStory = mRealm.where(TopStory.class).equalTo("id", storyId).findFirst();
+
+        populateBasicInfo();
+
+        isUrlEmpty = checkIfUrlEmpty(mTopStory.getUrl());
+
+        setUpViewPager();
 
     }
 
     /**
-     * A placeholder fragment containing a simple view.
+     * Method to populate the basic info about the article loaded
      */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
+    private void populateBasicInfo() {
+        TextView articleTitle = findViewById(R.id.tv_article_title);
+        TextView articleUrl = findViewById(R.id.tv_article_url);
+        TextView articleOwner = findViewById(R.id.tv_user);
+        String url = mTopStory.getUrl();
+        if (checkIfUrlEmpty(url)) {
+            url = "No url present";
         }
+        if (mTopStory != null) {
+            articleTitle.setText(mTopStory.getTitle());
+            articleUrl.setText(url);
+            long time = System.currentTimeMillis() / 1000 - mTopStory.getTime();
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_story_details, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
+            articleOwner.setText(String.format("%s ago%s%s", TimeUtils.timeConverter(time), " . ", mTopStory.getBy()));
         }
     }
+
+
+    /**
+     * Method to check if the given url is empty or not
+     *
+     * @param url
+     * @return
+     */
+    private boolean checkIfUrlEmpty(String url) {
+        return url == null || url.isEmpty();
+    }
+
+
+    /**
+     * Method to setup viewpager with adapter
+     */
+    private void setUpViewPager() {
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        String commentsTitle = mTopStory.getKids().size() + " COMMENTS";
+        ArrayList<Integer> commentIdList = new ArrayList<>(mTopStory.getKids());
+        mSectionsPagerAdapter.addFragment(CommentsFragment.newInstance(commentIdList), commentsTitle);
+        if (!isUrlEmpty) {
+            mSectionsPagerAdapter.addFragment(ArticleFragment.newInstance(mTopStory.getUrl()), "ARTICLE");
+        }
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+    }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitle = new ArrayList<>();
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return mFragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            return mFragmentList.size();
+        }
+
+        void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitle.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitle.get(position);
         }
     }
 }

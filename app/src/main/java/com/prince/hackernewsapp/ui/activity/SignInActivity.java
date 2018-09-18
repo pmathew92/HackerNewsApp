@@ -33,16 +33,12 @@ public class SignInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         ButterKnife.bind(this);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
@@ -55,7 +51,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.btn_google_login)
-     void signIn() {
+    void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -72,28 +68,38 @@ public class SignInActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 Log.e(TAG, "Google sign in failed", e);
+                Toast.makeText(getApplicationContext(), "Can't connect with Google client", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
 
+    /**
+     * Method to authenticate user with firebase
+     *
+     * @param acct
+     */
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mFirebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithCredential:success");
-                        FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                        updateUI(user);
-                    } else {
-                        Log.e(TAG, "signInWithCredential:failure", task.getException());
-                        Toast.makeText(getApplicationContext(), "Authentication Failed.", Toast.LENGTH_SHORT).show();
-                    }
+        mFirebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                // Sign in success, update UI with the signed-in user's information
+                Log.v(TAG, "signInWithCredential:success");
+                FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                updateUI(user);
+            } else {
+                Log.e(TAG, "signInWithCredential:failure", task.getException());
+                Toast.makeText(getApplicationContext(), "Authentication Failed.", Toast.LENGTH_SHORT).show();
+            }
 
-                });
+        });
     }
 
+    /**
+     * Method to go to next page if successfully signed in
+     *
+     * @param user
+     */
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             startActivity(new Intent(getApplicationContext(), StoriesActivity.class));

@@ -51,7 +51,7 @@ public class StoryAdapter extends RealmRecyclerViewAdapter<TopStory, StoryAdapte
         holder.mScore.setText(String.valueOf(topStory.getScore()));
         holder.mTitle.setText(topStory.getTitle());
         holder.mUrl.setText(topStory.getUrl());
-        holder.mTotalComments.setText(String.valueOf(topStory.getDescendants()));
+        holder.mTotalComments.setText(String.valueOf(topStory.getKids().size()));
         long time = System.currentTimeMillis() / 1000 - topStory.getTime();
 
         holder.mUserTime.setText(String.format("%s ago%s%s", TimeUtils.timeConverter(time), " . ", topStory.getBy()));

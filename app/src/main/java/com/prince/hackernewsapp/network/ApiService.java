@@ -1,5 +1,6 @@
 package com.prince.hackernewsapp.network;
 
+import com.prince.hackernewsapp.model.Comments;
 import com.prince.hackernewsapp.model.TopStory;
 
 import java.util.List;
@@ -14,4 +15,7 @@ public interface ApiService {
 
     @GET("item/{id}.json?print=pretty")
     Observable<TopStory> getStory(@Path("id") int id);
+
+    @GET("item/{id}.json?print=pretty")
+    Observable<Comments> getComments(@Path("id") int id);
 }
